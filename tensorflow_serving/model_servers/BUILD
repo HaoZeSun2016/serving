@@ -15,6 +15,14 @@ licenses(["notice"])  # Apache 2.0
 # or other implementation details.
 package_group(name = "tensorflow_model_server_custom_op_clients")
 
+package_group(
+    name = "testing",
+    packages = [
+        # tensorflow_transform for testing only
+        "//third_party/py/tensorflow_transform/examples/...",
+    ],
+)
+
 filegroup(
     name = "all_files",
     srcs = glob(
@@ -343,6 +351,7 @@ cc_library(
         ":tensorflow_model_server_custom_op_clients",
         "//tensorflow_serving:internal",
     ],
+    linkopts = ["-rdynamic"],
     deps = [
         ":server_lib",
         "@org_tensorflow//tensorflow/c:c_api",
@@ -356,7 +365,10 @@ cc_library(
 cc_binary(
     name = "tensorflow_model_server",
     stamp = 1,
-    visibility = ["//tensorflow_serving:internal"],
+    visibility = [
+        ":testing",
+        "//tensorflow_serving:internal",
+    ],
     deps = [
         ":tensorflow_model_server_main_lib",
     ],
@@ -384,10 +396,12 @@ py_test(
         "//tensorflow_serving/servables/tensorflow/testdata:saved_model_half_plus_three/00000123/variables/variables.index",
         "@org_tensorflow//tensorflow/cc/saved_model:saved_model_half_plus_two",
     ],
+    srcs_version = "PY2AND3",
     deps = [
         "//tensorflow_serving/apis:model_service_proto_py_pb2",
         "//tensorflow_serving/apis:prediction_service_proto_py_pb2",
         "@org_tensorflow//tensorflow:tensorflow_py",
+        "@six_archive//:six",
     ],
 )
 
@@ -405,6 +419,7 @@ py_test(
         "//tensorflow_serving/servables/tensorflow/testdata:saved_model_half_plus_three/00000123/variables/variables.data-00000-of-00001",
         "//tensorflow_serving/servables/tensorflow/testdata:saved_model_half_plus_three/00000123/variables/variables.index",
     ],
+    srcs_version = "PY2AND3",
     tags = ["notsan"],
     deps = [
         "//tensorflow_serving/apis:prediction_service_proto_py_pb2",
@@ -440,7 +455,7 @@ pkg_deb(
     homepage = "https://github.com/tensorflow/serving",
     maintainer = "TensorFlow Serving team",
     package = "tensorflow-model-server",
-    version = "1.12.0",  # Set when releasing a new version of TensorFlow Serving (e.g. 1.0.0).
+    version = "undefined",  # Set when releasing a new version of TensorFlow Serving (e.g. 1.0.0).
 )
 
 # Build with '-c opt'
@@ -451,5 +466,5 @@ pkg_deb(
     homepage = "https://github.com/tensorflow/serving",
     maintainer = "TensorFlow Serving team",
     package = "tensorflow-model-server-universal",
-    version = "1.12.0",  # Set when releasing a new version of TensorFlow Serving (e.g. 1.0.0).
+    version = "undefined",  # Set when releasing a new version of TensorFlow Serving (e.g. 1.0.0).
 )

@@ -43,22 +43,47 @@ limitations under the License.
 // To enable batching (default disabled): --enable_batching
 // To override the default batching parameters: --batching_parameters_file
 
+#include <string>
 #include <iostream>
 #include <vector>
 
 #include "tensorflow/c/c_api.h"
 #include "tensorflow/core/lib/core/status.h"
 #include "tensorflow/core/platform/init_main.h"
+#include "tensorflow/core/platform/load_library.h"
 #include "tensorflow/core/util/command_line_flags.h"
 #include "tensorflow_serving/model_servers/server.h"
 #include "tensorflow_serving/model_servers/version.h"
 
+void SplitString(const std::string& s, std::vector<std::string>& v, const std::string& c)
+{
+  std::string::size_type pos1, pos2;
+  pos2 = s.find(c);
+  pos1 = 0;
+  while(std::string::npos != pos2)
+  {
+    v.push_back(s.substr(pos1, pos2-pos1));
+ 
+    pos1 = pos2 + c.size();
+    pos2 = s.find(c, pos1);
+  }
+  if(pos1 != s.length())
+    v.push_back(s.substr(pos1));
+}
+
+
 int main(int argc, char** argv) {
+  std::string custom_ops;
+  std::vector<std::string> custom_op_path; 
   tensorflow::serving::main::Server::Options options;
   bool display_version = false;
   std::vector<tensorflow::Flag> flag_list = {
       tensorflow::Flag("port", &options.grpc_port,
                        "Port to listen on for gRPC API"),
+      tensorflow::Flag("grpc_socket_path", &options.grpc_socket_path,
+                       "If non-empty, listen to a UNIX socket for gRPC API "
+                       "on the given path. Can be either relative or absolute "
+                       "path."),
       tensorflow::Flag("rest_api_port", &options.http_port,
                        "Port to listen on for HTTP/REST API. If set to zero "
                        "HTTP/REST API will not be exported. This port must be "
@@ -146,6 +171,8 @@ int main(int argc, char** argv) {
                        "initializations (such as TF optimizations) at load "
                        "time, to reduce first request latency."),
       tensorflow::Flag("version", &display_version, "Display version"),
+      tensorflow::Flag("custom_ops", &custom_ops,
+                       "load additional operators from given user_op library"),
       tensorflow::Flag(
           "monitoring_config_file", &options.monitoring_config_file,
           "If non-empty, read an ascii MonitoringConfig protobuf from "
@@ -167,6 +194,17 @@ int main(int argc, char** argv) {
   if (argc != 1) {
     std::cout << "unknown argument: " << argv[1] << "\n" << usage;
   }
+  SplitString(custom_ops, custom_op_path, ":");  // path_to_op1:path_to_op2...
+  for(int i_op = 0; i_op < custom_op_path.size(); i_op++){
+    TF_Status* status = TF_NewStatus();
+    // Load the library.
+    TF_LoadLibrary(custom_op_path[i_op].c_str(), status);
+    if (!TF_GetCode(status) == TF_OK) {
+        std::cout << "Problem loading user_op library " <<custom_op_path[i_op] << ": " << TF_Message(status);
+        return -1;
+    } // end if
+    TF_DeleteStatus(status);
+  } // end for
 
   tensorflow::serving::main::Server server;
   const auto& status = server.BuildAndStart(options);
