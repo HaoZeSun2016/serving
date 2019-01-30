@@ -1,0 +1,50 @@
+## File System
+unset TF_NEED_S3
+unset TF_NEED_GCP
+unset TF_NEED_HDFS
+
+## compute
+
+### cuda 
+unset TF_NEED_CUDA
+unset TF_CUDA_VERSION
+unset CUDA_TOOLKIT_PATH
+unset TF_CUDA_COMPUTE_CAPABILITIES
+
+### cudnn
+unset TF_CUDNN_VERSION
+unset CUDNN_INSTALL_PATH
+
+### opencl
+unset TF_NEED_OPENCL
+unset TF_NEED_OPENCL_SYCL
+
+## MPI
+unset TF_NEED_MPI
+unset TF_NEED_VERBS
+unset TF_NEED_GDR
+
+## clang
+unset TF_CUDA_CLANG
+
+## blas
+unset TF_NEED_MKL
+
+## NCCL
+unset TF_NEED_NCCL
+unset NCCL_INSTALL_PATH
+unset TF_NCCL_VERSION
+
+### TENSORRT
+unset TF_NEED_TENSORRT
+unset TENSORRT_INSTALL_PATH
+unset TF_TENSORRT_VERSION
+## other
+
+unset TF_NEED_JEMALLOC
+unset TF_ENABLE_XLA
+unset GCC_HOST_COMPILER_PATH
+unset PYTHON_BIN_PATH
+unset CC_OPT_FLAGS
+unset PYTHON_LIB_PATH
+
