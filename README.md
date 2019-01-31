@@ -1,3 +1,13 @@
+1.  配置python2.x cuda cudnn nccl2.x tensorRT等环境
+2.  修改install_tools中的配置 注意增加python-devel PYTHON_INCLUDE_PATH NCCL_HDR_PATH等环境变量
+3.  从bazelbuild的release下载对应的最低bazel.xxx.sh版本进行安装
+4.  注意bazel编译中的-rdynamic 和 -fPIC选项
+5.  修改main.cc
+6.  编译serving
+7.  编译custom_ops注意相比于python_load 要去掉-ltensorflow_framework选项使之不依赖于python版本的tensorflow而依赖于serving
+
+8. 使用serving参考start_service.sh其中rest和grpc不能使用同一端口
+
 # TensorFlow Serving
 
 [![Ubuntu Build Status](https://storage.googleapis.com/tensorflow-serving-kokoro-build-badges/ubuntu.svg)](https://storage.googleapis.com/tensorflow-serving-kokoro-build-badges/ubuntu.html)
