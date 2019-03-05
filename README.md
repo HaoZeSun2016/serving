@@ -8,6 +8,14 @@
 
 8. 使用serving参考start_service.sh其中rest和grpc不能使用同一端口
 
+2019.3
+
+9. 参考https://github.com/tensorflow/serving/issues/680 增加了cpu端的client服务包编译，用bazel编译成.so库
+   install_tools中配置好gcc路径 编译build-tf-client
+   会在tensorflow_serving/client下生成一个.so文件
+   nm -Ca *.so可以看到函数和类入口名，对照example/resnet_client.cc中的函数即可
+   使用时load相应的*.so
+
 # TensorFlow Serving
 
 [![Ubuntu Build Status](https://storage.googleapis.com/tensorflow-serving-kokoro-build-badges/ubuntu.svg)](https://storage.googleapis.com/tensorflow-serving-kokoro-build-badges/ubuntu.html)
