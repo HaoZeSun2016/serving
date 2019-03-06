@@ -21,7 +21,10 @@ filegroup(
 )
 
 cc_binary(
-    name = "libtf_serving_api.so",
+    name = "libclient.so",
+    srcs = [
+        "client_framework.cc",
+    ],
     linkshared=1,
     deps = [
         "//tensorflow_serving/apis:prediction_service_proto",

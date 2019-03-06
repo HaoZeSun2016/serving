@@ -6,7 +6,9 @@ killall -9 tensorflow_model_server
 sleep 5
 op_path=/search/odin/hzsun/cuda_codes/serving
 qa_model_path=/search/odin/hzsun/tf-serving-model-bak/qa-select-base-combined04-ckpt80
+#qa_model_path=/search/odin/hzsun/tf-serving-model-bak/qacbert-xla-03-ckpt40-layer1+7-dim384.8
 mrc_model_path=/search/odin/hzsun/tf-serving-model-bak/mrc-base-mrc02-ckpt60
+#mrc_model_path=/search/odin/hzsun/tf-serving-model-bak/mrcbert-xla-03-ckpt30-layer1+7-dim384.8
 custom_ops=${op_path}/kernel_fo_conv.so:${op_path}/kernel_fo_pooling.so
 cmd=bazel-bin/tensorflow_serving/model_servers/tensorflow_model_server
 for i in 1 2 3 4 5 6 7 

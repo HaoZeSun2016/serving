@@ -15,5 +15,6 @@ bazel build \
  --copt="-fPIC" \
  --copt=-msse4.2 \
  --verbose_failures \
-//tensorflow_serving/client:libtf_serving_api.so
+//tensorflow_serving/client:libclient.so
+
 
