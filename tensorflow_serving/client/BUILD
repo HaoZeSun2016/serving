@@ -22,9 +22,8 @@ filegroup(
 
 cc_binary(
     name = "libclient.so",
-    srcs = [
-        "client_framework.cc",
-    ],
+    srcs = ["client_framework.cc",],
+    visibility = ["//visibility:public",],
     linkshared=1,
     deps = [
         "//tensorflow_serving/apis:prediction_service_proto",

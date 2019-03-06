@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include "grpcpp/create_channel.h"
 #include "grpcpp/security/credentials.h"
@@ -22,7 +22,7 @@ using tensorflow::serving::PredictResponse;
 using tensorflow::serving::PredictionService;
 
 typedef google::protobuf::Map<tensorflow::string, tensorflow::TensorProto> TFFDict;
-typedef std::map<std::string, tensorflow::TensorProto> FFDict;  // feed & fetch dict
+typedef std::unordered_map<std::string, tensorflow::TensorProto> FFDict;  // feed & fetch dict
 
 // override of c++ types into tensorflow protobuf type
 // 1. string/boolean/int32/float32
@@ -76,7 +76,8 @@ tensorflow::TensorProto transFormat(const int * arr, int & arr_size, std::vector
 tensorflow::TensorProto transFormat(const float * arr, int & arr_size, std::vector<int> & shapes) {
     tensorflow::TensorProto proto;
     proto.set_dtype(tensorflow::DataType::DT_FLOAT);
-    for (int i = 0; i < arr_size; ++i) {;
+    for (int i = 0; i < arr_size; ++i) {
+        ;
         proto.add_float_val(arr[i]);
     }
     for (int i = 0; i < shapes.size(); ++i) {
@@ -87,21 +88,31 @@ tensorflow::TensorProto transFormat(const float * arr, int & arr_size, std::vect
 
 
 class ServingClient {
- public:
-  ServingClient(std::string port, std::string model_name, std::string model_signature_name){
-      // setup grpc connection
-      std::shared_ptr<Channel> channel = grpc::CreateChannel(port, grpc::InsecureChannelCredentials());
-      // setup service
-      this->stub_ = PredictionService::NewStub(channel);
-      this->model_name_ = model_name;
-      this->model_signature_name_ = model_signature_name;
-  }
+public:
+    ServingClient(std::string port, std::string model_name, std::string model_signature_name);
 
-  bool callPredict(FFDict& feed_dict, FFDict& fetch_dict) {
+    bool callPredict(FFDict& feed_dict, FFDict& fetch_dict);
+
+private:
+    std::unique_ptr<PredictionService::Stub> stub_;
+    tensorflow::string model_name_;
+    tensorflow::string model_signature_name_;
+};
+
+ServingClient::ServingClient(std::string port, std::string model_name, std::string model_signature_name) {
+    // setup grpc connection
+    std::shared_ptr<Channel> channel = grpc::CreateChannel(port, grpc::InsecureChannelCredentials());
+    // setup service
+    this->stub_ = PredictionService::NewStub(channel);
+    this->model_name_ = model_name;
+    this->model_signature_name_ = model_signature_name;
+}
+
+bool ServingClient::callPredict(FFDict& feed_dict, FFDict& fetch_dict) {
     PredictRequest predictRequest;
     PredictResponse response;
     ClientContext context;
-       
+
     predictRequest.mutable_model_spec()->set_name(this->model_name_);
     predictRequest.mutable_model_spec()->set_signature_name(this->model_signature_name_);  // "serving_default"  as default
     TFFDict & inputs = *predictRequest.mutable_inputs();
@@ -112,20 +123,14 @@ class ServingClient {
 
     Status status = this->stub_->Predict(&context, predictRequest, &response);
     if (status.ok()) {
-      // copy results form response
-      TFFDict & outputs = *response.mutable_outputs();
-      for (TFFDict::iterator it = outputs.begin(); it != outputs.end(); it++) {
-          fetch_dict[std::string(it->first)] = it->second;
-      }
-      return true;
-    } 
-    else {
-      return false;
+        // copy results form response
+        TFFDict & outputs = *response.mutable_outputs();
+        for (TFFDict::iterator it = outputs.begin(); it != outputs.end(); it++) {
+            fetch_dict[std::string(it->first)] = it->second;
+        }
+        return true;
     }
-  }
-
- private:
-  std::unique_ptr<PredictionService::Stub> stub_;
-  tensorflow::string model_name_;
-  tensorflow::string model_signature_name_;
-};
+    else {
+        return false;
+    }
+}
