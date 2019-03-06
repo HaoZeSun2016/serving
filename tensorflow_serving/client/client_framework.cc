@@ -29,7 +29,7 @@ typedef std::map<std::string, tensorflow::TensorProto> FFDict;  // feed & fetch 
 // 2. data in row major
 // github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor.proto
 // github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor_shape.proto
-tesorflow::TensorProto transFormat(const char * arr, int & arr_size) {
+tensorflow::TensorProto transFormat(const char * arr, int & arr_size) {
     tensorflow::TensorProto proto;
     proto.set_dtype(tensorflow::DataType::DT_STRING);
     proto.add_string_val(arr, arr_size);
@@ -37,49 +37,49 @@ tesorflow::TensorProto transFormat(const char * arr, int & arr_size) {
     return proto;
 }
 
-tesorflow::TensorProto transFormat(const std::string * arr, int & arr_size, std::vector<int> & shapes) {
+tensorflow::TensorProto transFormat(const std::string * arr, int & arr_size, std::vector<int> & shapes) {
     tensorflow::TensorProto proto;
     proto.set_dtype(tensorflow::DataType::DT_STRING);
-    for (int i = 0; i < arr_size, ++i) {
-        proto.add_string_val(arr[i])
+    for (int i = 0; i < arr_size; ++i) {
+        proto.add_string_val(arr[i]);
     }
-    for (int i = 0; i < shapes.size(), ++i) {
+    for (int i = 0; i < shapes.size(); ++i) {
         proto.mutable_tensor_shape()->add_dim()->set_size(shapes[i]);
     }
     return proto;
 }
 
-tesorflow::TensorProto transFormat(const bool * arr, int & arr_size, std::vector<int> & shapes) {
+tensorflow::TensorProto transFormat(const bool * arr, int & arr_size, std::vector<int> & shapes) {
     tensorflow::TensorProto proto;
     proto.set_dtype(tensorflow::DataType::DT_BOOL);
-    for (int i = 0; i < arr_size, ++i) {
-        proto.add_bool_val(arr[i])
+    for (int i = 0; i < arr_size; ++i) {
+        proto.add_bool_val(arr[i]);
     }
-    for (int i = 0; i < shapes.size(), ++i) {
+    for (int i = 0; i < shapes.size(); ++i) {
         proto.mutable_tensor_shape()->add_dim()->set_size(shapes[i]);
     }
     return proto;
 }
 
-tesorflow::TensorProto transFormat(const int * arr, int & arr_size, std::vector<int> & shapes) {
+tensorflow::TensorProto transFormat(const int * arr, int & arr_size, std::vector<int> & shapes) {
     tensorflow::TensorProto proto;
     proto.set_dtype(tensorflow::DataType::DT_INT32);
-    for (int i = 0; i < arr_size, ++i) {
-        proto.add_int_val(arr[i])
+    for (int i = 0; i < arr_size; ++i) {
+        proto.add_int_val(arr[i]);
     }
-    for (int i = 0; i < shapes.size(), ++i) {
+    for (int i = 0; i < shapes.size(); ++i) {
         proto.mutable_tensor_shape()->add_dim()->set_size(shapes[i]);
     }
     return proto;
 }
 
-tesorflow::TensorProto transFormat(const float * arr, int & arr_size, std::vector<int> & shapes) {
+tensorflow::TensorProto transFormat(const float * arr, int & arr_size, std::vector<int> & shapes) {
     tensorflow::TensorProto proto;
     proto.set_dtype(tensorflow::DataType::DT_FLOAT);
-    for (int i = 0; i < arr_size, ++i) {
-        proto.add_float_val(arr[i])
+    for (int i = 0; i < arr_size; ++i) {;
+        proto.add_float_val(arr[i]);
     }
-    for (int i = 0; i < shapes.size(), ++i) {
+    for (int i = 0; i < shapes.size(); ++i) {
         proto.mutable_tensor_shape()->add_dim()->set_size(shapes[i]);
     }
     return proto;
@@ -97,7 +97,7 @@ class ServingClient {
       this->model_signature_name_ = model_signature_name;
   }
 
-  std::string callPredict(FFDict& feed_dict, FFDict& fetch_dict) {
+  bool callPredict(FFDict& feed_dict, FFDict& fetch_dict) {
     PredictRequest predictRequest;
     PredictResponse response;
     ClientContext context;
@@ -117,10 +117,10 @@ class ServingClient {
       for (TFFDict::iterator it = outputs.begin(); it != outputs.end(); it++) {
           fetch_dict[std::string(it->first)] = it->second;
       }
-      return ("outputs size is" + std::string(response.outputs_size()));
+      return true;
     } 
     else {
-      return "failed";
+      return false;
     }
   }
 
