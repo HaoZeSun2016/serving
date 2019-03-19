@@ -1,4 +1,4 @@
-1.  配置python2.x cuda cudnn nccl2.x tensorRT等环境
+1.  配置python2.x cuda cudnn nccl2.x tensorRT等环境 ~/.bashrcz中增加CC=/usr/bin/gcc
 2.  修改install_tools中的配置 注意增加python-devel PYTHON_INCLUDE_PATH NCCL_HDR_PATH等环境变量
 3.  从bazelbuild的release下载对应的最低bazel.xxx.sh版本进行安装
 4.  注意bazel编译中的-rdynamic 和 -fPIC选项
