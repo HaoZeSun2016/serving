@@ -46,9 +46,9 @@ export TF_NEED_MKL=0
 
 
 ## tensorrt
-#export TF_NEED_TENSORRT=1
-#export TENSORRT_INSTALL_PATH="${TOP_SRC_DIR}/3rd-party/TensorRT-4.0.0.3/lib"
-#export TF_TENSORRT_VERSION="4.1.0"
+export TF_NEED_TENSORRT=1
+export TENSORRT_INSTALL_PATH="${TOP_SRC_DIR}/3rd-party/TensorRT-4.0.0.3/lib"
+export TF_TENSORRT_VERSION="4.1.0"
 
 ## infer no need nccl
 ## nccl
